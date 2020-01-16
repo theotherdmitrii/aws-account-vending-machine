@@ -95,9 +95,24 @@ class DynamicAliasProvider(ResourceProvider):
         # If alias name not already there then create one by invoking update method.
         return DiffResult(True)
 
-    def read(self, id_: str, props: Any) -> ReadResult:
-        """ For this we don't think we need to use read method that's why it simply pass the control. """
-        pass
+    def read(self, resource_id: str, props) -> ReadResult:
+        """ This method will give list all the alias for that group. """
+        response = client.list_aliases(
+            OrganizationId=props['organization_id'],
+            EntityId=props['group_id'],
+            MaxResults=100
+        )
+        result = response['Aliases']
+        while 'NextToken' in response:
+            response = client.list_aliases(
+                OrganizationId=props['organization_id'],
+                EntityId=props['group_id'],
+                NextToken=response['NextToken'],
+                MaxResults=100
+            )
+            result.extend(response['Aliases'])
+
+        return ReadResult(id_=resource_id, outs=result)
 
     def delete(self, resource_id: str, props: Any) -> None:
         if 'organization_id' in props and 'group_id' in props and 'alias_email' in props:

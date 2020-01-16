@@ -89,8 +89,22 @@ class DynamicGroupProvider(ResourceProvider):
         return DiffResult(True)
 
     # For this we don't think we need to use read method that's why it simply pass the control.
-    def read(self, id_: str, props: Any) -> ReadResult:
-        pass
+    def read(self, resource_id: str, props) -> ReadResult:
+        """ This method will give list all the groups for a organization. """
+        response = client.list_groups(
+            OrganizationId=props['organization_id'],
+            MaxResults=100
+        )
+        result = response['Groups']
+        while 'NextToken' in response:
+            response = client.list_groups(
+                OrganizationId=props['organization_id'],
+                NextToken=response['NextToken'],
+                MaxResults=100
+            )
+            result.extend(response['Groups'])
+
+        return ReadResult(id_=resource_id, outs=result)
 
     def delete(self, resource_id: str, props: Any) -> None:
         """This method will delete the group according to the group_id and organization_id"""
