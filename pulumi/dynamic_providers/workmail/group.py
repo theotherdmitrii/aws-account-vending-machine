@@ -94,7 +94,6 @@ class DynamicGroupProvider(ResourceProvider):
 
     def delete(self, resource_id: str, props: Any) -> None:
         """This method will delete the group according to the group_id and organization_id"""
-        print(props)
         if 'group_id' in props and 'organization_id' in props:
             client.delete_group(
                 OrganizationId=props['organization_id'],
