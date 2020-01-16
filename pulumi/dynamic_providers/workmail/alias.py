@@ -1,7 +1,7 @@
 from typing import Any
 
 import boto3
-from pulumi import Input, export, Config
+from pulumi import Input
 from pulumi.dynamic import ResourceProvider, CreateResult, UpdateResult, DiffResult, Resource, CheckResult, ReadResult
 
 client = boto3.client('workmail')
@@ -40,7 +40,8 @@ class DynamicAliasProvider(ResourceProvider):
                 # return false so that update is not called on the resource.
 
                 if alias == news['alias_email']:
-                    error = {'alias': alias, 'message': 'Alias name already exist', 'group_id': news['group_id']}
+                    error = {'alias': alias, 'message': 'Alias name already exist', 'group_id': news['group_id'],
+                             'organization_id': news['organization_id']}
                     news['errors'] = [error]
 
             return CheckResult(news, [])
@@ -63,7 +64,7 @@ class DynamicAliasProvider(ResourceProvider):
 
         return CreateResult(props['alias_email'],
                             {'alias_email': props['alias_email'], 'group_id': props['group_id'],
-                             'message': 'New Alias Created for Group'})
+                             'message': 'New Alias Created for Group', 'organization_id': props['organization_id']})
 
     def update(self, resource_id: str, olds: Any, news: Any) -> UpdateResult:
         """ This update method is called if the diff method return True which means that alias with the specified name
@@ -78,7 +79,7 @@ class DynamicAliasProvider(ResourceProvider):
 
         return UpdateResult(
             {'alias_email': news['alias_email'], 'group_id': news['group_id'],
-             'message': 'New Alias Created for Group'})
+             'message': 'New Alias Created for Group', 'organization_id': news['organization_id']})
 
     def diff(self, resource_id: str, olds: Any, news: Any) -> DiffResult:
         """ This diff method will simply determine whether or not we need to call the update method depending on does
@@ -94,10 +95,17 @@ class DynamicAliasProvider(ResourceProvider):
         # If alias name not already there then create one by invoking update method.
         return DiffResult(True)
 
-    # For this we don't think we need to use read method that's why it simply pass the control.
-
     def read(self, id_: str, props: Any) -> ReadResult:
+        """ For this we don't think we need to use read method that's why it simply pass the control. """
         pass
+
+    def delete(self, resource_id: str, props: Any) -> None:
+        if 'organization_id' in props and 'group_id' in props and 'alias_email' in props:
+            client.delete_alias(
+                OrganizationId=props['organization_id'],
+                EntityId=props['group_id'],
+                Alias=props['alias_email']
+            )
 
 
 class Alias(Resource):
