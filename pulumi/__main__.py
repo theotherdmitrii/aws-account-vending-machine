@@ -1,8 +1,8 @@
 from pulumi import export, Config, get_stack
 
-from dynamic_providers.workmail.group import Group, GroupArgs
+from dynamic_providers.workmail.group import Group
 
-from dynamic_providers.workmail.alias import AliasArgs, Alias
+from dynamic_providers.workmail.alias import Alias
 from pulumi.runtime import get_root_resource
 
 config = Config()

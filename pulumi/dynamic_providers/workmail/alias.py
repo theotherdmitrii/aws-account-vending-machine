@@ -7,15 +7,6 @@ from pulumi.dynamic import ResourceProvider, CreateResult, UpdateResult, DiffRes
 client = boto3.client('workmail')
 
 
-class AliasArgs(object):
-    organization_id: Input[str]
-    group_id: Input[str]
-
-    def __init__(self, organization_id, group_id):
-        self.organization_id = organization_id
-        self.group_id = group_id
-
-
 class DynamicAliasProvider(ResourceProvider):
 
     def check(self, olds: Any, news: Any) -> CheckResult:
@@ -125,7 +116,6 @@ class DynamicAliasProvider(ResourceProvider):
 
 class Alias(Resource):
     def __init__(self, name, group_id: str, alias_email: str, opts=None):
-        args = AliasArgs('m-b01addc6667743b0b865f62342b5a217', group_id)
-        full_args = {'group_id': None, 'message': None, 'alias_email': alias_email,
-                     **vars(args)}
+        full_args = {'group_id': group_id, 'message': None, 'alias_email': alias_email,
+                     'organization_id': 'm-b01addc6667743b0b865f62342b5a217'}
         super().__init__(DynamicAliasProvider(), name, full_args, opts)

@@ -1,19 +1,9 @@
 from typing import Any
 
 import boto3
-from pulumi import Input
 from pulumi.dynamic import ResourceProvider, CreateResult, UpdateResult, DiffResult, Resource, CheckResult, ReadResult
 
 client = boto3.client('workmail')
-
-
-class GroupArgs(object):
-    organization_id: Input[str]
-    group_name: Input[str]
-
-    def __init__(self, organization_id, group_name):
-        self.organization_id = organization_id
-        self.group_name = group_name
 
 
 class DynamicGroupProvider(ResourceProvider):
@@ -64,7 +54,6 @@ class DynamicGroupProvider(ResourceProvider):
         """ This update method is called if the diff method return True which means that group with the specified name
                does not exist and we need to create one.
                In this method we would be creating a new group for that organization. """
-
         response = client.create_group(
             OrganizationId=news['organization_id'],
             Name=news['group_name']
@@ -90,21 +79,12 @@ class DynamicGroupProvider(ResourceProvider):
 
     # For this we don't think we need to use read method that's why it simply pass the control.
     def read(self, resource_id: str, props) -> ReadResult:
-        """ This method will give list all the groups for a organization. """
+        """ This method will give a groups for an organization. """
         response = client.list_groups(
             OrganizationId=props['organization_id'],
-            MaxResults=100
+            GroupId=props['group_id']
         )
-        result = response['Groups']
-        while 'NextToken' in response:
-            response = client.list_groups(
-                OrganizationId=props['organization_id'],
-                NextToken=response['NextToken'],
-                MaxResults=100
-            )
-            result.extend(response['Groups'])
-
-        return ReadResult(id_=resource_id, outs=result)
+        return ReadResult(id_=resource_id, outs=response)
 
     def delete(self, resource_id: str, props: Any) -> None:
         """This method will delete the group according to the group_id and organization_id"""
@@ -117,6 +97,5 @@ class DynamicGroupProvider(ResourceProvider):
 
 class Group(Resource):
     def __init__(self, name, group_name: str, organization_id: str, opts=None):
-        full_args = {'group_id': None, 'message': None, organization_id: None,
-                     **vars(GroupArgs(organization_id, group_name))}
+        full_args = {'group_id': None, 'message': None, 'organization_id': organization_id, 'group_name': group_name}
         super().__init__(DynamicGroupProvider(), name, full_args, opts)
