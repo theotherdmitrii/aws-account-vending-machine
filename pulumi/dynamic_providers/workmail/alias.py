@@ -115,7 +115,7 @@ class DynamicAliasProvider(ResourceProvider):
 
 
 class Alias(Resource):
-    def __init__(self, name, group_id: str, alias_email: str, opts=None):
+    def __init__(self, name, group_id: str, alias_email: str, organization_id: str, opts=None):
         full_args = {'group_id': group_id, 'message': None, 'alias_email': alias_email,
-                     'organization_id': 'm-b01addc6667743b0b865f62342b5a217'}
+                     'organization_id': organization_id}
         super().__init__(DynamicAliasProvider(), name, full_args, opts)

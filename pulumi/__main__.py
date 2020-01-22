@@ -17,6 +17,6 @@ export("group_export_group_id", group.group_id)
 
 alias_email = 'root-' + config.get('alias_name') + '@' + config.get('sub_domain')
 alias = Alias(name="WorkMailAliasCreation", group_id=group.group_id,
-              alias_email=alias_email)
+              alias_email=alias_email, organization_id='m-b01addc6667743b0b865f62342b5a217')
 export("alias_export_alias_email", alias.alias_email)
 export("alias_export_group_id", alias.group_id)
