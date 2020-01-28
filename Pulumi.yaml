@@ -1,10 +1,9 @@
 # Pulumi project file
 # https://www.pulumi.com/docs/intro/concepts/project/
 
-name: django-serverless
+name: workmail
 runtime: python
-description: A Django website packaged using the Serverless Framework and deployed
-  via Pulumi.
+description: A project to automate the creation of aws accounts.
 # Where __main__.py is located
 main: ./pulumi
 # Where stack configs are located
