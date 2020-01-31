@@ -40,15 +40,22 @@ class DynamicGroupProvider(ResourceProvider):
                     return CreateResult(error['group_id'], {'group_id': error['group_id'],
                                                             'message': error['message']})
 
-        response = client.create_group(
+        create_group_response = client.create_group(
             OrganizationId=props['organization_id'],
             Name=props['group_name']
         )
 
-        return CreateResult(response['GroupId'],
-                            {'group_id': response['GroupId'],
-                             'message': 'New Group Created',
-                             'organization_id': props['organization_id']})
+        group_id = create_group_response['GroupId']
+
+        client.register_to_work_mail(
+            OrganizationId=props['organization_id'],
+            EntityId=group_id,
+            Email=props['group_email']
+        )
+
+        return CreateResult(group_id, {'group_id': group_id,
+                                       'message': 'New Group Created',
+                                       'organization_id': props['organization_id']})
 
     def update(self, resource_id: str, olds: Any, news: Any) -> UpdateResult:
         """ This update method is called if the diff method return True which means that group with the specified name
@@ -89,6 +96,10 @@ class DynamicGroupProvider(ResourceProvider):
     def delete(self, resource_id: str, props: Any) -> None:
         """This method will delete the group according to the group_id and organization_id"""
         if 'group_id' in props and 'organization_id' in props:
+            client.deregister_from_work_mail(
+                OrganizationId=props['organization_id'],
+                EntityId=props['group_id']
+            )
             client.delete_group(
                 OrganizationId=props['organization_id'],
                 GroupId=props['group_id']
@@ -96,6 +107,7 @@ class DynamicGroupProvider(ResourceProvider):
 
 
 class Group(Resource):
-    def __init__(self, name, group_name: str, organization_id: str, opts=None):
-        full_args = {'group_id': None, 'message': None, 'organization_id': organization_id, 'group_name': group_name}
+    def __init__(self, name, group_name: str, group_email: str, organization_id: str, opts=None):
+        full_args = {'group_id': None, 'message': None, 'organization_id': organization_id, 'group_name': group_name,
+                     'group_email': group_email}
         super().__init__(DynamicGroupProvider(), name, full_args, opts)
