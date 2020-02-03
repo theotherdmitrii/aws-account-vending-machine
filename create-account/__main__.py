@@ -3,24 +3,23 @@ from pulumi_aws import organizations as org
 
 config = Config()
 
-#  Args
-aws_organization_root_id = ''
-aws_organization_account_name = ''
+organization_root_id = config.require("aws_organization_root_id")
+spoke_account_access_role_name = config.require("spoke_account_access_role_name")
+spoke_account_name = config.require("spoke_account_name")
 
 # Constants
-aws_organization_role_name = "NuageAccessRole"
-aws_organization_account_email = f"root-{aws_organization_account_name}@aws.nuage.studio"
+spoke_account_email = f"root-{spoke_account_name}@aws.nuage.studio"
 
 # AWS Organizations part of the story
-freelancer_account_unit = org.OrganizationalUnit("freelancer-accounts-unit",
-                                                 name="Freelancer accounts",
-                                                 parent_id=aws_organization_root_id)
+spoke_account_unit = org.OrganizationalUnit("spoke-accounts-unit",
+                                            name="Freelancer accounts",
+                                            parent_id=organization_root_id)
 
-freelancer_account = org.Account("freelancer-account",
-                                 name=f"Sandbox account for {aws_organization_account_name}",
-                                 email=aws_organization_account_email,
-                                 parent_id=freelancer_account_unit.id,
-                                 role_name=aws_organization_role_name)
+spoke_account = org.Account("spoke-account",
+                            name=f"Sandbox account for {spoke_account_name}",
+                            email=spoke_account_email,
+                            parent_id=spoke_account_unit.id,
+                            role_name=spoke_account_access_role_name)
 
-export("freelancer_account_arn", freelancer_account.id)
-export("freelancer_account_role", freelancer_account.role_name)
+export("spoke_account_id", spoke_account.id)
+export("spoke_account_access_role", spoke_account.role_name)
