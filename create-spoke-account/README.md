@@ -1,15 +1,15 @@
-### Create Admin User within Spoke Account
+### Creates Spoke Account and Admin User within the account
 
 
-- Provide required configuration with `Pulumi.<stack>.yaml`
+- Provide required configuration with `Pulumi.<stack-name>.yaml`
 
 ```yaml
 config:
-  create-user:spoke_account_id: 123456789101
-  create-user:spoke_account_name: freelancers
-  create-user:spoke_account_username: awesomedev
-  create-user:spoke_account_access_role_name: NuageAccessRole
-  create-user:pgp_pub_key_path: '/home/<user>/my-secure.pgp'
+  create-spoke-account:aws_organization_root_id: r-b2xr
+  create-spoke-account:spoke_account_access_role_name: NuageAccessRole
+  create-spoke-account:spoke_account_name: freelancers
+  create-spoke-account:spoke_account_username: awesomedev
+  create-spoke-account:pgp_pub_key_path: '/home/<user>/my-secure.pgp' 
 ```
 
 - Create User account with `pulimi up -y`
