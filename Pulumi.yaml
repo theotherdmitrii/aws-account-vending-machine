@@ -1,7 +1,7 @@
 # Pulumi project file
 # https://www.pulumi.com/docs/intro/concepts/project/
 
-name: workmail
+name: create-aws-account
 runtime: python
 description: A project to automate the creation of aws accounts.
 # Where __main__.py is located
