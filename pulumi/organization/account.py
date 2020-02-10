@@ -1,6 +1,6 @@
 from pulumi import ComponentResource, ResourceOptions, Input, Output
 from pulumi_aws.organizations import Account
-from src.dynamic_providers.workmail.alias import Alias
+from dynamic_providers.workmail.alias import Alias
 
 
 class AWSOrganizationAccountArgs:

@@ -1,3 +1,0 @@
-name: create-spoke-account
-runtime: python
-description: Use the program to create spoke account wihin organization and an administrator user within the account
