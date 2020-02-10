@@ -37,10 +37,10 @@ workmail_group = Group(name="freelancer-emails",
 
 org_account = AWSOrganizationAccount("Nuage-account",
                                      args=AWSOrganizationAccountArgs(
-                                         org_account_unit_id=org_account_unit.id,
-                                         org_account_name=org_account_name,
-                                         org_account_email=org_account_email,
-                                         org_account_access_role_name=org_account_access_role_name,
+                                         account_unit_id=org_account_unit.id,
+                                         account_name=org_account_name,
+                                         account_email=org_account_email,
+                                         account_access_role_name=org_account_access_role_name,
                                          workmail_org_id=workmail_org_id,
                                          workmail_group_id=workmail_group.group_id
                                      ))

@@ -7,26 +7,32 @@ from pulumi_aws import iam
 class AWSOrganizationAccountUserArgs:
     account_id: Input[str]
     """
+    AWS (spoke) account id
     """
 
     account_name: Input[str]
     """
+    AWS (spoke) account name to generate user name
     """
 
     access_role_name: Input[str]
     """
+    Access role for provider to assume
     """
 
     username: Input[str]
     """
+    User's name
     """
 
     user_policy_arn: Input[str]
     """
+    User's policy ARN
     """
 
     password_length: Input[int]
     """
+    User's password length
     """
 
     password_encryption_pub_key: Input[str]
@@ -53,14 +59,17 @@ class AWSOrganizationAccountUser(ComponentResource):
     """
     console_url: Output[str]
     """
+    URL to follow to login to AWS console
     """
 
     username: Output[str]
     """
+    User's name to login
     """
 
     encrypted_password: Output[str]
     """
+    Encrypted key for User to login 
     """
 
     def __init__(self,
