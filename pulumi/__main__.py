@@ -1,10 +1,10 @@
 import pulumi
-import pgp_util as pgp
-from pulumi import Config
-from pulumi_aws.organizations import Organization, OrganizationalUnit
 from dynamic_providers.workmail.group import Group
+from encode import b64text
 from organization.account import AWSOrganizationAccount, AWSOrganizationAccountArgs
 from organization.account_user import AWSOrganizationAccountUser, AWSOrganizationAccountUserArgs
+from pulumi import Config
+from pulumi_aws.organizations import Organization, OrganizationalUnit
 
 config = Config()
 
@@ -16,7 +16,9 @@ org_account_access_role_name = config.require("org_account_access_role_name")
 org_account_username = config.require("org_account_username")
 org_account_userpass_length = config.require("org_account_userpass_length")
 org_account_userpass_encryption_pub_key = config.require("org_account_userpass_encryption_pub_key")
-org_account_userpass_encryption_pub_key_base64 = pgp.b64text(org_account_userpass_encryption_pub_key)
+org_account_userpass_encryption_pub_key_base64 = b64text(org_account_userpass_encryption_pub_key)
+org_account_userpass_encryption_armored_key = config.require("org_account_userpass_encryption_armored_key")
+org_account_userpass_encryption_passphrase = config.require("org_account_userpass_encryption_passphrase")
 
 workmail_org_id = config.require("workmail_org_id")
 workmail_group_email = config.require("workmail_group_email")
@@ -53,9 +55,11 @@ org_user = AWSOrganizationAccountUser("org-account-user",
                                           username=org_account_username,
                                           user_policy_arn="arn:aws:iam::aws:policy/AdministratorAccess",
                                           password_length=org_account_userpass_length,
-                                          password_encryption_pub_key=org_account_userpass_encryption_pub_key_base64
+                                          password_encryption_pub_key=org_account_userpass_encryption_pub_key_base64,
+                                          password_encryption_armored_key=org_account_userpass_encryption_armored_key,
+                                          password_encryption_passphrase=org_account_userpass_encryption_passphrase,
                                       ))
 
 pulumi.export("console_url", org_user.console_url)
 pulumi.export("username", org_user.username)
-pulumi.export("encrypted_password", org_user.encrypted_password)
+pulumi.export("password", org_user.password)

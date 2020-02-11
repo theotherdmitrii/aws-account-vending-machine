@@ -6,5 +6,7 @@ config:
   create-aws-account:org_account_username: awesomedev
   create-aws-account:org_account_userpass_length: 8
   create-aws-account:org_account_userpass_encryption_pub_key: '/home/<user>/my-secure.pgp'
+  create-aws-account:org_account_userpass_encryption_armored_key: '/home/<user>/my-secure.asc'
+  create-aws-account:org_account_userpass_encryption_passphrase: 'passphrase'
   create-aws-account:workmail_org_id: m-123b
   create-aws-account:workmail_group_email: root-workmail@nuage.awsapps.com
