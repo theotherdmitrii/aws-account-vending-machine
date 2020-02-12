@@ -36,33 +36,15 @@ class AWSOrganizationAccountUserArgs:
     User's password length
     """
 
-    password_encryption_pub_key: Input[str]
-    """
-    """
-
-    password_encryption_armored_key: Input[str]
-    """
-    """
-
-    password_encryption_passphrase: Input[str]
-    """
-    """
-
     def __init__(self, account_id: Input[str] = None, account_name: Input[str] = None,
                  access_role_name: Input[str] = None, username: Input[str] = None,
-                 user_policy_arn: Input[str] = None, password_length: Input[int] = None,
-                 password_encryption_pub_key: Input[str] = None,
-                 password_encryption_armored_key: Input[str] = None,
-                 password_encryption_passphrase: Input[str] = None):
+                 user_policy_arn: Input[str] = None, password_length: Input[int] = None):
         self.account_id = account_id
         self.account_name = account_name
         self.access_role_name = access_role_name
         self.username = username
         self.user_policy_arn = user_policy_arn
         self.password_length = password_length
-        self.password_encryption_pub_key = password_encryption_pub_key
-        self.password_encryption_armored_key = password_encryption_armored_key
-        self.password_encryption_passphrase = password_encryption_passphrase
 
 
 class AWSOrganizationAccountUser(ComponentResource):
@@ -91,7 +73,8 @@ class AWSOrganizationAccountUser(ComponentResource):
                  opts: ResourceOptions = None):
         super().__init__("nuage/aws:organizations:AWSOrganizationAccountUser", name, {}, opts)
 
-        decryptor = PasswordDecryptor(armored_key_path=args.password_encryption_armored_key)
+        decryptor = PasswordDecryptor(email="qweasd@qwe.asd",
+                                      passphrase="qweasd")
 
         provider = aws.Provider("freelance-account-provider",
                                 assume_role={
@@ -109,7 +92,7 @@ class AWSOrganizationAccountUser(ComponentResource):
                                                   user=user.name,
                                                   password_reset_required=True,
                                                   password_length=args.password_length,
-                                                  pgp_key=args.password_encryption_pub_key,
+                                                  pgp_key=decryptor.export(),
                                                   opts=pulumi.ResourceOptions(
                                                       provider=provider
                                                   ))
@@ -127,6 +110,6 @@ class AWSOrganizationAccountUser(ComponentResource):
         self.username = user.name
 
         self.password = Output.secret(user_login_profile.encrypted_password.apply(
-            lambda enc: decryptor.decrypt(enc, args.password_encryption_passphrase)))
+            lambda enc: decryptor.decrypt(enc)))
 
         self.register_outputs({})

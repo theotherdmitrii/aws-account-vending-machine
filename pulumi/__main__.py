@@ -1,4 +1,5 @@
 import pulumi
+from decrypt import PasswordDecryptor
 from dynamic_providers.workmail.group import Group
 from encode import b64text
 from organization.account import AWSOrganizationAccount, AWSOrganizationAccountArgs
@@ -54,10 +55,7 @@ org_user = AWSOrganizationAccountUser("org-account-user",
                                           access_role_name=org_account_access_role_name,
                                           username=org_account_username,
                                           user_policy_arn="arn:aws:iam::aws:policy/AdministratorAccess",
-                                          password_length=org_account_userpass_length,
-                                          password_encryption_pub_key=org_account_userpass_encryption_pub_key_base64,
-                                          password_encryption_armored_key=org_account_userpass_encryption_armored_key,
-                                          password_encryption_passphrase=org_account_userpass_encryption_passphrase,
+                                          password_length=org_account_userpass_length
                                       ))
 
 pulumi.export("console_url", org_user.console_url)
