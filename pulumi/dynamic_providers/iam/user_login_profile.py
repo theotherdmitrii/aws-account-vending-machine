@@ -43,6 +43,10 @@ def client(name: str, props: Any):
 
 
 class AssumeRole:
+    """
+    The class holds role arn when assume role action required
+    """
+
     assume_role_arn: Input[str]
 
     def __init__(self, role_arn: Input[str] = None):
