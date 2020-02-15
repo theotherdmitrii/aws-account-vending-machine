@@ -1,28 +1,10 @@
 import pulumi
-from decrypt import PasswordDecryptor
+from config import org_id, org_account_name, org_account_email, org_account_access_role_name, org_account_username, \
+    workmail_org_id, workmail_group_email
 from dynamic_providers.workmail.group import Group
-from encode import b64text
 from organization.account import AWSOrganizationAccount, AWSOrganizationAccountArgs
 from organization.account_user import AWSOrganizationAccountUser, AWSOrganizationAccountUserArgs
-from pulumi import Config
 from pulumi_aws.organizations import Organization, OrganizationalUnit
-
-config = Config()
-
-# Inputs
-org_id = config.require("org_id")
-org_account_name = config.require("org_account_name")
-org_account_email = config.require("org_account_email")
-org_account_access_role_name = config.require("org_account_access_role_name")
-org_account_username = config.require("org_account_username")
-org_account_userpass_length = config.require("org_account_userpass_length")
-org_account_userpass_encryption_pub_key = config.require("org_account_userpass_encryption_pub_key")
-org_account_userpass_encryption_pub_key_base64 = b64text(org_account_userpass_encryption_pub_key)
-org_account_userpass_encryption_armored_key = config.require("org_account_userpass_encryption_armored_key")
-org_account_userpass_encryption_passphrase = config.require("org_account_userpass_encryption_passphrase")
-
-workmail_org_id = config.require("workmail_org_id")
-workmail_group_email = config.require("workmail_group_email")
 
 org = Organization("Nuage",
                    opts=pulumi.ResourceOptions(
@@ -54,8 +36,8 @@ org_user = AWSOrganizationAccountUser("org-account-user",
                                           account_name=org_account_name,
                                           access_role_name=org_account_access_role_name,
                                           username=org_account_username,
-                                          user_policy_arn="arn:aws:iam::aws:policy/AdministratorAccess",
-                                          password_length=org_account_userpass_length
+                                          password="qwe123asd",
+                                          user_policy_arn="arn:aws:iam::aws:policy/AdministratorAccess"
                                       ))
 
 pulumi.export("console_url", org_user.console_url)

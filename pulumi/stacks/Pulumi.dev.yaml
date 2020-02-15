@@ -1,12 +1,9 @@
 config:
-  create-aws-account:org_id: o-123a
-  create-aws-account:org_account_name: freelancer1001
-  create-aws-account:org_account_email: freelancer1001@nuage.awsapps.com
-  create-aws-account:org_account_access_role_name: NuageAccessRole
-  create-aws-account:org_account_username: awesomedev
-  create-aws-account:org_account_userpass_length: 8
-  create-aws-account:org_account_userpass_encryption_pub_key: '/home/<user>/my-secure.pgp'
-  create-aws-account:org_account_userpass_encryption_armored_key: '/home/<user>/my-secure.asc'
-  create-aws-account:org_account_userpass_encryption_passphrase: 'passphrase'
-  create-aws-account:workmail_org_id: m-123b
-  create-aws-account:workmail_group_email: root-workmail@nuage.awsapps.com
+  create-spoke-account:org_id: o-syu4m3phrj
+  create-spoke-account:org_account_name: freelancer1001
+  create-spoke-account:org_account_email: freelancer1001@dtcimbal-us-west-2.awsapps.com
+  create-spoke-account:org_account_access_role_name: NuageAccessRole
+  create-spoke-account:org_account_username: awesomedev
+  create-spoke-account:workmail_org_id: m-b9cfd46bc98b415ab9cd01479faa315b
+  create-spoke-account:workmail_group_email: root-workmail@dtcimbal-us-west-2.awsapps.com
+
