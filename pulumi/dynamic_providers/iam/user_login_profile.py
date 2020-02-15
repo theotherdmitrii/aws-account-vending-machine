@@ -10,8 +10,8 @@ required_props = ['username', 'password']
 def client_with_session(name: str, role_arn):
     sts = boto3.client('sts')
     response = sts.assume_role(
-        RoleArn=props["assume_role_arn"],
-        RoleSessionName="pulumi.UserLoginProfileProvider",
+        RoleArn=role_arn,
+        RoleSessionName="pulumi.dynamic.UserLoginProfileProvider",
         DurationSeconds=900)
 
     session = response["Credentials"]
@@ -46,7 +46,6 @@ class UserLoginProfileProvider(ResourceProvider):
 
     def create(self, _news: Any):
         iam = client("iam", _news)
-
         username = _news['username']
         password = _news['password']
         login_profile = iam.LoginProfile(user_name=username)
@@ -77,7 +76,6 @@ class UserLoginProfileProvider(ResourceProvider):
 
 
 class UserLoginProfile(Resource):
-
     def __init__(self, name, username: Input[str], password: Input[str], assume_role: AssumeRole = None, opts=None):
         full_args = {'username': username, 'password': password, **vars(assume_role)} if (assume_role) else {
             'username': username, 'password': password}

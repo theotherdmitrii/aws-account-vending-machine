@@ -1,8 +1,6 @@
 from pulumi import Config
 
 config = Config()
-
-# Inputs
 org_id = config.require("org_id")
 org_account_name = config.require("org_account_name")
 org_account_email = config.require("org_account_email")
