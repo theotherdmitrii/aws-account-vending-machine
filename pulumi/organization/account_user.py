@@ -1,6 +1,6 @@
+import dynamic_providers.iam
 import pulumi
 import pulumi_aws as aws
-from decrypt import PasswordDecryptor
 from pulumi import ComponentResource, ResourceOptions, Input, Output
 from pulumi_aws import iam
 
@@ -31,38 +31,20 @@ class AWSOrganizationAccountUserArgs:
     User's policy ARN
     """
 
-    password_length: Input[int]
+    password: Input[str]
     """
     User's password length
     """
 
-    password_encryption_pub_key: Input[str]
-    """
-    """
-
-    password_encryption_armored_key: Input[str]
-    """
-    """
-
-    password_encryption_passphrase: Input[str]
-    """
-    """
-
     def __init__(self, account_id: Input[str] = None, account_name: Input[str] = None,
                  access_role_name: Input[str] = None, username: Input[str] = None,
-                 user_policy_arn: Input[str] = None, password_length: Input[int] = None,
-                 password_encryption_pub_key: Input[str] = None,
-                 password_encryption_armored_key: Input[str] = None,
-                 password_encryption_passphrase: Input[str] = None):
+                 user_policy_arn: Input[str] = None, password: Input[str] = None):
         self.account_id = account_id
         self.account_name = account_name
         self.access_role_name = access_role_name
         self.username = username
         self.user_policy_arn = user_policy_arn
-        self.password_length = password_length
-        self.password_encryption_pub_key = password_encryption_pub_key
-        self.password_encryption_armored_key = password_encryption_armored_key
-        self.password_encryption_passphrase = password_encryption_passphrase
+        self.password = password
 
 
 class AWSOrganizationAccountUser(ComponentResource):
@@ -91,12 +73,12 @@ class AWSOrganizationAccountUser(ComponentResource):
                  opts: ResourceOptions = None):
         super().__init__("nuage/aws:organizations:AWSOrganizationAccountUser", name, {}, opts)
 
-        decryptor = PasswordDecryptor(armored_key_path=args.password_encryption_armored_key)
+        assume_role_arn = Output.all(args.account_id, args.access_role_name).apply(
+            lambda a: f"arn:aws:iam::{a[0]}:role/{a[1]}")
 
         provider = aws.Provider("freelance-account-provider",
                                 assume_role={
-                                    "role_arn": Output.all(args.account_id, args.access_role_name).apply(
-                                        lambda a: f"arn:aws:iam::{a[0]}:role/{a[1]}")
+                                    "role_arn": assume_role_arn
                                 })
 
         user = iam.User("freelance-account-user",
@@ -105,14 +87,11 @@ class AWSOrganizationAccountUser(ComponentResource):
                             provider=provider
                         ))
 
-        user_login_profile = iam.UserLoginProfile("freelance-account-user-login-profile",
-                                                  user=user.name,
-                                                  password_reset_required=True,
-                                                  password_length=args.password_length,
-                                                  pgp_key=args.password_encryption_pub_key,
-                                                  opts=pulumi.ResourceOptions(
-                                                      provider=provider
-                                                  ))
+        user_login_profile = dynamic_providers.iam.UserLoginProfile("freelance-account-user-login-profile",
+                                                                    username=user.name,
+                                                                    password=args.password,
+                                                                    assume_role=dynamic_providers.iam.AssumeRole(
+                                                                        role_arn=assume_role_arn))
 
         user_policy_attachment = iam.UserPolicyAttachment("freelance-account-user_UserAccessRole",
                                                           policy_arn=args.user_policy_arn,
@@ -126,7 +105,6 @@ class AWSOrganizationAccountUser(ComponentResource):
 
         self.username = user.name
 
-        self.password = Output.secret(user_login_profile.encrypted_password.apply(
-            lambda enc: decryptor.decrypt(enc, args.password_encryption_passphrase)))
+        self.password = args.password
 
         self.register_outputs({})
