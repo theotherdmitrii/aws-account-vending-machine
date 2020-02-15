@@ -42,6 +42,8 @@ org_user = AWSOrganizationAccountUser("org-account-user",
                                           user_policy_arn="arn:aws:iam::aws:policy/AdministratorAccess"
                                       ))
 
+password = pulumi.Output.secret(org_user.password)
+
 pulumi.export("console_url", org_user.console_url)
 pulumi.export("username", org_user.username)
-pulumi.export("password", org_user.password)
+pulumi.export("password", password)
