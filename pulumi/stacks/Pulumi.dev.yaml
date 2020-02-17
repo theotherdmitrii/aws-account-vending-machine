@@ -1,9 +1,9 @@
 config:
-  create-aws-account:org_id: o-syu4m3phrj
+  create-aws-account:org_id: o-123a
   create-aws-account:org_account_name: freelancer1001
-  create-aws-account:org_account_email: freelancer1001@dtcimbal-us-west-2.awsapps.com
+  create-aws-account:org_account_email: freelancer1001@nuage.awsapps.com
   create-aws-account:org_account_access_role_name: NuageAccessRole
   create-aws-account:org_account_username: awesomedev
-  create-aws-account:workmail_org_id: m-b9cfd46bc98b415ab9cd01479faa315b
-  create-aws-account:workmail_group_email: root-workmail@dtcimbal-us-west-2.awsapps.com
+  create-aws-account:workmail_org_id: m-123b
+  create-aws-account:workmail_group_email: root-workmail@nuage.awsapps.com
 
