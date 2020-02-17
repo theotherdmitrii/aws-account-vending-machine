@@ -1,12 +1,11 @@
 import pulumi
-import password
 from config import org_id, org_account_name, org_account_email, org_account_access_role_name, org_account_username, \
     workmail_org_id, workmail_group_email
 from dynamic_providers.workmail.group import Group
 from organization.account import AWSOrganizationAccount, AWSOrganizationAccountArgs
 from organization.account_user import AWSOrganizationAccountUser, AWSOrganizationAccountUserArgs
 from pulumi_aws.organizations import Organization, OrganizationalUnit
-
+from pulumi_random import RandomPassword
 
 org = Organization("Nuage",
                    opts=pulumi.ResourceOptions(
@@ -32,13 +31,18 @@ org_account = AWSOrganizationAccount("Nuage-account",
                                          workmail_group_id=workmail_group.group_id
                                      ))
 
+org_user_password = RandomPassword("org-account-user-password",
+                                   length=16,
+                                   override_special="_%@",
+                                   special=True)
+
 org_user = AWSOrganizationAccountUser("org-account-user",
                                       args=AWSOrganizationAccountUserArgs(
                                           account_id=org_account.account_id,
                                           account_name=org_account_name,
                                           access_role_name=org_account_access_role_name,
                                           username=org_account_username,
-                                          password=password.generate(16),
+                                          password=org_user_password.result,
                                           user_policy_arn="arn:aws:iam::aws:policy/AdministratorAccess"
                                       ))
 
